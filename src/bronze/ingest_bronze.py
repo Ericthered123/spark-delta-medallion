@@ -1,5 +1,5 @@
 from pyspark.sql.functions import current_timestamp, input_file_name
-from common.spark_session import get_spark
+from src.common.spark_session import get_spark
 
 RAW_PATH = "data/raw/"
 BRONZE_PATH = "data/delta/bronze_events"
