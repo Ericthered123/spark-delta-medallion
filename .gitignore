@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Spark / Delta
+data/delta/
+
+# OS / Editors
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
