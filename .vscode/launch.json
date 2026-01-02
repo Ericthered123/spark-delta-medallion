@@ -2,6 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+       "name": "Gold",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.gold.agg_gold",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
       "name": "Silver",
       "type": "debugpy",
       "request": "launch",
