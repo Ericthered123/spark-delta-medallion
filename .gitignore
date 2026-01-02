@@ -9,7 +9,9 @@ data/delta/
 
 # OS / Editors
 .DS_Store
-.vscode/
+# VS Code local stuff
+.vscode/*.log
+.vscode/settings.local.json
 .idea/
 
 # Logs
