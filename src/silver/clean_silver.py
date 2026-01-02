@@ -1,4 +1,5 @@
-from pyspark.sql.functions import col, to_timestamp
+from pyspark.sql.functions import col, to_timestamp, row_number
+from pyspark.sql.window import Window
 from delta.tables import DeltaTable
 
 from src.common.spark_session import get_spark
@@ -12,7 +13,7 @@ spark = get_spark("silver_cleaning")
 bronze_df = spark.read.format("delta").load(BRONZE_PATH)
 
 # 2️ Normalization and data contract
-silver_df = (
+normalized_df = (
     bronze_df
     .withColumn("event_ts", to_timestamp("event_ts"))
     .select(
@@ -24,7 +25,25 @@ silver_df = (
     )
 )
 
-# 3️ Upsert idempotent
+# 3️ minimum detail (Silver doesnt accept null keys)
+normalized_df = normalized_df.filter(col("event_id").isNotNull())
+
+# 4️ Determinist deduplication 
+# Rule: stick with the most recent event by event_id
+window_spec = (
+    Window
+    .partitionBy("event_id")
+    .orderBy(col("ingestion_ts").desc())
+)
+
+silver_df = (
+    normalized_df
+    .withColumn("rn", row_number().over(window_spec))
+    .filter(col("rn") == 1)
+    .drop("rn")
+)
+
+# 5️ idempotent Upsert
 if DeltaTable.isDeltaTable(spark, SILVER_PATH):
     silver_table = DeltaTable.forPath(spark, SILVER_PATH)
 
