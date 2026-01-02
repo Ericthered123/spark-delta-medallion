@@ -2,6 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Silver",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.silver.clean_silver",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
       "name": "Bronze",
       "type": "debugpy",
       "request": "launch",
@@ -9,5 +17,5 @@
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     }
-]
+  ]
 }
