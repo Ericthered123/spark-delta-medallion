@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Bronze",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.bronze.ingest_bronze",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+]
+}

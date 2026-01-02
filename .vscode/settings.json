@@ -1,0 +1,17 @@
+{
+  // 🐍 Python
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
+
+  // 📦 Para que VS Code entienda imports tipo `from src...`
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}"
+  ],
+
+  // 🧠 Mejor análisis estático
+  "python.analysis.typeCheckingMode": "basic",
+
+  // 🔥 Spark genera mucho ruido
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none"
+  }
+}
