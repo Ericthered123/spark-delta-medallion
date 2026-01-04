@@ -1,5 +1,7 @@
 from pyspark.sql.functions import col, to_date, count
 from src.common.spark_session import get_spark
+from src.contracts.gold_events_daily import validate_gold
+
 
 SILVER_PATH = "data/delta/silver_events"
 GOLD_PATH = "data/delta/gold_events_daily"
@@ -18,6 +20,9 @@ gold_df = (
         count("*").alias("event_count")
     )
 )
+
+# Gold contract validation
+validate_gold(gold_df)
 
 # 3️ Write Gold (recomputable layer)
 (

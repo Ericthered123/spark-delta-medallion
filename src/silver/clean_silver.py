@@ -1,6 +1,7 @@
 from pyspark.sql.functions import col, to_timestamp, row_number
 from pyspark.sql.window import Window
 from delta.tables import DeltaTable
+from src.contracts.silver_events import validate_silver
 
 from src.common.spark_session import get_spark
 
@@ -42,6 +43,8 @@ silver_df = (
     .filter(col("rn") == 1)
     .drop("rn")
 )
+#  Silver contract validation
+validate_silver(silver_df)
 
 # 5️ idempotent Upsert
 if DeltaTable.isDeltaTable(spark, SILVER_PATH):
