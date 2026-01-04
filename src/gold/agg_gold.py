@@ -1,6 +1,8 @@
 from pyspark.sql.functions import col, to_date, count
 from src.common.spark_session import get_spark
 from src.contracts.gold_events_daily import validate_gold
+from src.quality.gold_checks import run_gold_quality_checks
+
 
 
 SILVER_PATH = "data/delta/silver_events"
@@ -20,6 +22,9 @@ gold_df = (
         count("*").alias("event_count")
     )
 )
+
+metrics = run_gold_quality_checks(gold_df, silver_df)
+print("GOLD METRICS:", metrics)
 
 # Gold contract validation
 validate_gold(gold_df)
