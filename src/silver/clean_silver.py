@@ -2,6 +2,7 @@ from pyspark.sql.functions import col, to_timestamp, row_number
 from pyspark.sql.window import Window
 from delta.tables import DeltaTable
 from src.contracts.silver_events import validate_silver
+from src.quality.silver_checks import run_silver_quality_checks
 
 from src.common.spark_session import get_spark
 
@@ -43,6 +44,11 @@ silver_df = (
     .filter(col("rn") == 1)
     .drop("rn")
 )
+
+#  Quality checks , ideally a try-catch block could be used here
+metrics = run_silver_quality_checks(silver_df)
+print("SILVER METRICS:", metrics)
+
 #  Silver contract validation
 validate_silver(silver_df)
 
