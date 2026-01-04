@@ -20,9 +20,13 @@ def run_gold_quality_checks(
     )
 
     metrics["gold_event_sum"] = gold_sum
+    metrics["gold_silver_diff"] = (
+    metrics["silver_rows"] - gold_sum
+)
+    
     metrics["gold_equals_silver"] = (
-        gold_sum == metrics["silver_rows"]
-    )
+    metrics["gold_silver_diff"] == 0
+)
 
     # --- Nulls ---
     metrics["null_event_date"] = (
