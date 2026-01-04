@@ -3,8 +3,12 @@ from pyspark.sql.window import Window
 from delta.tables import DeltaTable
 from src.contracts.silver_events import validate_silver
 from src.quality.silver_checks import run_silver_quality_checks
-
+from src.quality.persist import persist_metrics
 from src.common.spark_session import get_spark
+import uuid
+
+run_id = str(uuid.uuid4())
+
 
 BRONZE_PATH = "data/delta/bronze_events"
 SILVER_PATH = "data/delta/silver_events"
@@ -46,8 +50,17 @@ silver_df = (
 )
 
 #  Quality checks , ideally a try-catch block could be used here
+
 metrics = run_silver_quality_checks(silver_df)
-print("SILVER METRICS:", metrics)
+
+persist_metrics(
+    spark=spark,
+    run_id=run_id,
+    layer="silver",
+    dataset="silver_events",
+    metric_type="technical",
+    metrics=metrics
+)
 
 #  Silver contract validation
 validate_silver(silver_df)
