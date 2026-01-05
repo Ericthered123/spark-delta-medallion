@@ -1,6 +1,8 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, current_timestamp
 from pyspark.sql.types import Row
+from delta.tables import DeltaTable
+ 
 
 METADATA_PATH = "data/delta/processing_metadata"
 
@@ -36,20 +38,32 @@ def update_last_processed(
     dataset: str,
     last_processed: str
 ):
-    row = Row(
-        layer=layer,
-        dataset=dataset,
-        last_processed=last_processed
-    )
-
     df = (
-        spark.createDataFrame([row])
+        spark.createDataFrame([
+            Row(
+                layer=layer,
+                dataset=dataset,
+                last_processed=last_processed
+            )
+        ])
         .withColumn("run_ts", current_timestamp())
     )
 
-    (
-        df.write
-        .format("delta")
-        .mode("append")
-        .save(METADATA_PATH)
-    )
+    if DeltaTable.isDeltaTable(spark, METADATA_PATH):
+        table = DeltaTable.forPath(spark, METADATA_PATH)
+
+        (
+            table.alias("t")
+            .merge(
+                df.alias("s"),
+                "t.layer = s.layer AND t.dataset = s.dataset"
+            )
+            .whenMatchedUpdate(set={
+                "last_processed": "s.last_processed",
+                "run_ts": "s.run_ts"
+            })
+            .whenNotMatchedInsertAll()
+            .execute()
+        )
+    else:
+        df.write.format("delta").mode("overwrite").save(METADATA_PATH)
