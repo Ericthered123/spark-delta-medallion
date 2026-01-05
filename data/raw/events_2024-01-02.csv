@@ -1,0 +1,4 @@
+event_id,user_id,event_type,event_ts
+4,103,click,2024-01-02 10:01:00
+5,103,view,2024-01-02 10:02:00
+6,103,click,2024-01-02 10:03:00
