@@ -1,16 +1,33 @@
 from pyspark.sql.functions import col, to_timestamp, row_number
 from pyspark.sql.window import Window
 from delta.tables import DeltaTable
-
+from src.contracts.silver_events import validate_silver
+from src.quality.silver_checks import run_silver_quality_checks
+from src.quality.persist import persist_metrics
 from src.common.spark_session import get_spark
+import uuid
+import os
+from src.metadata.processing_metadata import(get_last_processed, update_last_processed) 
+
+run_id = str(uuid.uuid4())
+
 
 BRONZE_PATH = "data/delta/bronze_events"
 SILVER_PATH = "data/delta/silver_events"
 
 spark = get_spark("silver_cleaning")
 
+last_ts = get_last_processed(
+    spark,
+    layer="silver",
+    dataset="events"
+)
+
 # 1️ Read bronze (fuente inmutable)
 bronze_df = spark.read.format("delta").load(BRONZE_PATH)
+
+if last_ts:
+    bronze_df = bronze_df.filter(col("ingestion_ts") > last_ts)
 
 # 2️ Normalization and data contract
 normalized_df = (
@@ -43,6 +60,22 @@ silver_df = (
     .drop("rn")
 )
 
+#  Quality checks , ideally a try-catch block could be used here
+
+metrics = run_silver_quality_checks(silver_df)
+
+persist_metrics(
+    spark=spark,
+    run_id=run_id,
+    layer="silver",
+    dataset="silver_events",
+    metric_type="technical",
+    metrics=metrics
+)
+
+#  Silver contract validation
+validate_silver(silver_df)
+
 # 5️ idempotent Upsert
 if DeltaTable.isDeltaTable(spark, SILVER_PATH):
     silver_table = DeltaTable.forPath(spark, SILVER_PATH)
@@ -64,6 +97,22 @@ else:
         .format("delta")
         .mode("overwrite")
         .save(SILVER_PATH)
+    )
+
+
+# 6️ Update last processed timestamp
+max_ts = (
+    silver_df
+    .agg({"ingestion_ts": "max"})
+    .collect()[0][0]
+)
+
+if max_ts:
+    update_last_processed(
+        spark,
+        layer="silver",
+        dataset="events",
+        last_processed=str(max_ts)
     )
 
 spark.stop()
