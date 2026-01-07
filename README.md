@@ -2,7 +2,7 @@
 
 A batch–incremental data pipeline implementing Medallion Architecture (Bronze–Silver–Gold) using PySpark and Delta Lake.
 
-## 🎯 Project Objective
+##  Project Objective
 
 The goal of this project is to simulate a realistic event ingestion system and design an **incremental batch data pipeline** using Spark and Delta Lake.
 
@@ -43,7 +43,7 @@ Raw CSV → Bronze (Delta) → Silver (Delta) → Gold (Delta)
 Each layer is stored as a Delta table and has a specific responsibility.
 
 
-## 🥉 Bronze Layer — Raw Ingestion
+## 1 Bronze Layer — Raw Ingestion
 
 ### Responsibilities
 - Ingest raw CSV files
@@ -63,7 +63,7 @@ Each layer is stored as a Delta table and has a specific responsibility.
 
 
 
-## 🥈 Silver Layer — Clean & Curated Data
+## 2 Silver Layer — Clean & Curated Data
 
 ### Responsibilities
 - Type casting
@@ -82,7 +82,7 @@ Each layer is stored as a Delta table and has a specific responsibility.
 
 
 
-## 🥇 Gold Layer — Analytics Ready Data
+## 3 Gold Layer — Analytics Ready Data
 
 ### Responsibilities
 - Aggregate curated data
@@ -98,7 +98,7 @@ Each layer is stored as a Delta table and has a specific responsibility.
 - Small, aggregated datasets
 
 
-## 📜 Data Contracts
+##  Data Contracts
 
 Each layer enforces a clear data contract:
 
@@ -113,7 +113,7 @@ Each layer enforces a clear data contract:
   - Aggregated, analytics-ready schema
 
 
-## 🔁 Incremental Processing
+##  Incremental Processing
 
 The pipeline is incremental, not full reprocessing.
 
@@ -129,7 +129,7 @@ This makes the pipeline:
 
 
 
-## 🔐 Idempotency
+##  Idempotency
 
 The pipeline is designed to be idempotent.
 
@@ -161,7 +161,7 @@ Tests focus on correctness of rules rather than data volume.
 - Delta Lake
 - pytest
 
-## ▶️ How to Run
+##  How to Run
 
 1. Add new CSV files to `data/raw/`
 2. Run Bronze ingestion
