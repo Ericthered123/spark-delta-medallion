@@ -15,7 +15,7 @@ from delta import configure_spark_with_delta_pip
 def get_spark(app_name: str) -> SparkSession:
     builder = (
         SparkSession.builder
-        .appName(app_name)
+        .appName(app_name) # type: ignore
         .master("local[*]")
         .config(
             "spark.sql.extensions",

@@ -17,10 +17,10 @@ BRONZE_PATH = "data/delta/bronze_events"
 spark = get_spark("bronze_ingestion")
 all_files = sorted(os.listdir(RAW_PATH))
 
-# Leer último archivo procesado desde metadata
+# Read last processed file from metadata
 last_file = get_last_processed(spark, layer="bronze", dataset="events")
 
-# Evitar re-ingestar archivos ya procesados
+# Avoid re-ingesting already processed files
 if DeltaTable.isDeltaTable(spark, BRONZE_PATH):
     bronze_table = DeltaTable.forPath(spark, BRONZE_PATH)
     processed_files = [

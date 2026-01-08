@@ -12,7 +12,7 @@ def run_gold_quality_checks(
     metrics["gold_rows"] = gold_df.count()
     metrics["silver_rows"] = silver_df.count()
 
-    # --- Invariante fuerte ---
+    # --- Invariante strong ---
     gold_sum = (
         gold_df
         .agg(_sum("event_count").alias("total"))
@@ -37,7 +37,7 @@ def run_gold_quality_checks(
         gold_df.filter(col("event_type").isNull()).count()
     )
 
-    # --- Métricas inválidas ---
+    # --- Invalid metrics ---
     metrics["non_positive_event_count"] = (
         gold_df.filter(col("event_count") <= 0).count()
     )
